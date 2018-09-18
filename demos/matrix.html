@@ -8,9 +8,43 @@
   <script src="https://cdnjs.cloudflare.com/ajax/libs/p5.js/0.7.2/p5.js" integrity="sha256-nAGlRh0I/Bl11HX9TGce1M8dg9bnxROCb425L4fT848=" crossorigin="anonymous"></script>
 </head>
 <body>
-  
+  <div>
+    <label for="highlight-color">Highlight Color</label>
+    <input type="color" name="highlight" id="highlight-color">
+  </div>
+  <div>
+    <label for="trail-color">Trail Color</label>
+    <input type="color" name="trail" id="trail-color">
+  </div>
+  <div>
+    <label for="bg-color">Background Color</label>
+    <input type="color" name="bg" id="bg-color">
+  </div>
 </body>
 <script>
+
+var highlightInput = document.getElementById('highlight-color');
+var trailInput = document.getElementById('trail-color');
+var bgInput = document.getElementById('bg-color');
+
+highlightInput.value = "#d2ffa0";
+trailInput.value = "#00ff00";
+bgInput.value = "#000000";
+
+highlightInput.addEventListener('change', function () {
+  var c = color(this.value);
+  colorHighlight = [red(c), green(c), blue(c), 255];
+});
+
+trailInput.addEventListener('change', function () {
+  var c = color(this.value);
+  colorDefault = [red(c), green(c), blue(c), 255];
+});
+
+bgInput.addEventListener('change', function () {
+  var c = color(this.value);
+  colorBg = [red(c), green(c), blue(c), 255];
+});
 
 var alnumChars = "abcdefghijklmnopqrstuvwxy1234567890";
 var alnumFullChars = "ａｂｃｄｅｆｇｈｉｊｋｌｍｎｏｐｑｒｓｔｕｖｗｘｙＡＢＣＤＥＦＧＨＩＪＫＬＭＮＯＰＱＲＳＴＵＶＷＸＹＺ１２３４５６７８９０";
