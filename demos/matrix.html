@@ -1,0 +1,133 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="utf-8" />
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+  <title>Matrix</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/p5.js/0.7.2/p5.js" integrity="sha256-nAGlRh0I/Bl11HX9TGce1M8dg9bnxROCb425L4fT848=" crossorigin="anonymous"></script>
+</head>
+<body>
+  
+</body>
+<script>
+
+var alnumChars = "abcdefghijklmnopqrstuvwxy1234567890";
+var alnumFullChars = "ａｂｃｄｅｆｇｈｉｊｋｌｍｎｏｐｑｒｓｔｕｖｗｘｙＡＢＣＤＥＦＧＨＩＪＫＬＭＮＯＰＱＲＳＴＵＶＷＸＹＺ１２３４５６７８９０";
+var jpChars = "アイウエオカキクケコサシスセソタチツテトナニヌネノハヒフヘホマミムメモヤユヨラリルレロワヰヱヲン・ヿ";
+var codeChars = "!\\§$%&/()=?`#*+~-_.:,;|><°^{}[]";
+var codeFullChars = "	！＼§＄％＆／（）＝？｀＃＊＋～－＿．：，；｜><°＾｛｝［］";
+
+var chars = codeFullChars + jpChars; // concat charsets
+
+var drops = [];
+var lastMillis = 0;
+var globalDelta = 0;
+var globalSpeed = [100, 300]; // interval between drop ticks (random between the given range)
+var globalSpawn = [50, 200]; // spawn every X ms a new drop (random between the given range)
+var frameHeight = 30; // number of chars vertical
+var frameWidth = 40; // number of chars horizontal
+var trailSizes = [20,30]; // size of the trail (random between the given range)
+var colorHighlight = [210,255,160,255]; // color of first char
+var colorDefault = [0,255,0,255]; // color of the trail
+var colorBg = [0,0,0,255]; // color of the background
+
+function randomChar() {
+	return chars[Math.floor(Math.random() * chars.length)];
+}
+
+function Drop(x, y, h, speed) {
+  this.x = x * 10;
+  this.y = y + 10;
+  this.h = h;
+  this.pos = 0;
+  this.time = speed; // milliseconds
+  this.delta = 0;
+  this.chars = [];
+  this.size = Math.floor(random(trailSizes[0],trailSizes[1]));
+  
+  for (var i = 0; i < this.h; i++) {
+    this.chars.push(randomChar());
+  }
+  
+  this.draw = function () {
+    
+    fill(colorBg);
+
+    rect(this.x, -2, 10, this.y + 4 + 12 * constrain(this.pos, 0, frameHeight -1));
+    
+    for (var i = 0; i < this.chars.length; i++) {
+       if (this.pos < i) {
+         break;
+       }
+      
+       if (this.pos === i) {
+         fill(colorHighlight);
+       } else {
+         var opacity = map(this.pos - i,this.size,0,0,255);
+         fill(colorDefault[0], colorDefault[1], colorDefault[2], opacity);
+       }
+       
+       text(this.chars[i], this.x, this.y + 12 * i);       
+    }
+  };
+  
+  this.tick = function (t) {
+    this.delta += t;
+    
+    var moves = Math.floor(this.delta / this.time);
+    
+    this.pos += moves;
+    
+    for (var i = 0; i < moves * 1; i++) {
+      this.updateChar(); 
+    }
+    
+    this.delta -= moves * this.time;
+  }
+  
+  this.updateChar = function () {
+    this.chars[Math.floor(Math.random() * this.chars.length)] = randomChar();
+  }
+  
+  this.canDelete = function () {
+    return this.pos > this.h + this.size;
+  }
+}
+
+function deltaTime() {
+  var delta = millis() - lastMillis;
+  lastMillis = millis();
+  return delta;
+}
+
+function setup() {
+  createCanvas(frameWidth * 10, frameHeight * 12);
+  background(colorBg);
+  textFont("Lucida Console");
+  textSize(10);
+  noStroke();
+  frameRate(20);
+}
+
+function draw() {
+  var t = deltaTime();
+  globalDelta += t;
+	var spawnTime = Math.floor(random(globalSpawn[0],globalSpawn[1]));
+  var moves = Math.floor(globalDelta / spawnTime);
+  
+  for (var i = 0; i < moves; i++) {
+    drops.push(new Drop(Math.floor(random(frameWidth)), 0, frameHeight, Math.floor(random(globalSpeed[0],globalSpeed[1]))));
+  }
+  
+  for (var i = 0; i < drops.length; i++) {
+    var drop = drops[i];
+    drop.draw();
+    drop.tick(t);
+  }
+  
+  drops = drops.filter(function (d) { return !d.canDelete() }); 
+  globalDelta -= moves * spawnTime;
+}
+</script>
+</html>
