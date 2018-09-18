@@ -145,6 +145,7 @@ function setup() {
 }
 
 function draw() {
+  background(colorBg);
   var t = deltaTime();
   globalDelta += t;
 	var spawnTime = Math.floor(random(globalSpawn[0],globalSpawn[1]));
